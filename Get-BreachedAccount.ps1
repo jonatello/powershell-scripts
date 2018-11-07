@@ -12,9 +12,9 @@ Function Get-BreachedAccounts {
     .NOTES
 
     .EXAMPLE
-    PS C:\>Get-BreachedAccounts -Credentials (Get-Credential jrodriguez@electronicoffice.net)
+    PS C:\>Get-BreachedAccounts -Credentials (Get-Credential admin@example.com)
 
-    PS C:\>Get-BreachedAccounts -Users "jrodriguez@electronicoffice.net"
+    PS C:\>Get-BreachedAccounts -Users "user@example.com"
     #>
     
     [CmdletBinding()]
