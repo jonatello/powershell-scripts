@@ -9,6 +9,7 @@ Function Get-ExternalVulnerabilities {
     .NOTES
     Requires the following from the workstation it's being run on:
     NMAP - https://nmap.org/download.html
+    Shodan API Key
     .EXAMPLE
     PS C:\>Get-ExternalVulnerabilities -IPs (Get-Content c:\temp\list.txt) -ShodanAPIKey "xxxx"
     #>
@@ -82,17 +83,14 @@ Function Get-ExternalVulnerabilities {
 
         # Check for name on spamlists
         $NMAPDns = nmap -sn $IP --script dns-blacklist -oX "$Destination\$IP\dns.xml"
-
-        # Add some grep / filtering to add additional columns of particular interest
-        # Specific ports per IP
             
         # Create a custom object to hold the results
         [PSCustomObject]@{
             'IP or Hostname' = $IP
-            'SPF Record' = $SPFRecord
+            'SPF Record' = $SPFRecord[0]
             'DKIM Selector1 Record' = $DKIMSelector1Record
             'DKIM Selector2 Record' = $DKIMSelector2Record
-            'DMARC Record' = $DMARCRecord
+            'DMARC Record' = $DMARCRecord[0]
             'Shodan Results' = "Review \Scans\$IP\shodan.txt"
             'NMAP Scan Results' = "Review \Scans\$IP\vuln.xml"
             'NMAP SSL Scan' = "Review \Scans\$IP\ssl.xml"
