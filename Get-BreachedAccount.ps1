@@ -17,29 +17,30 @@ Function Get-BreachedAccounts {
     PS C:\>Get-BreachedAccounts -Users "user@example.com"
     #>
     
-    [CmdletBinding(DefaultParameterSetName='O365')]
+    [CmdletBinding(DefaultParameterSetName='Office365')]
     param (
         [Parameter(
             Mandatory = $true,
             Position = 0,
-            ParameterSetName = 'O365'
+            ParameterSetName = 'Office365'
         )]
-        [System.Management.Automation.PSCredential]$Credential, # = (Get-Credential -Message "Office365 Admin Credentials")
+        [System.Management.Automation.PSCredential]$Credential,
         [Parameter(
             Mandatory = $true,
-            Position = 1,
+            Position = 0,
             ParameterSetName = 'UserList',
-            ValueFromPipeline = $true
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [string[]]$User,
         [Parameter(
             Mandatory = $false,
-            Position = 2
+            Position = 1
         )]
         [string]$Destination = 'C:\temp',
         [Parameter(
             Mandatory = $false,
-            Position = 3
+            Position = 2
         )]
         [string]$Webhook
     )
