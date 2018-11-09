@@ -36,13 +36,16 @@ Function Get-BreachedAccounts {
             $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credentials -Authentication Basic -AllowRedirection
     
             Import-PSSession $Session -DisableNameChecking | Out-Null
+
+            $Users = (Get-Mailbox).UserPrincipalName
+            $Users = $Users -split ' '
+
+            $Users.GetType()
+            Write-Host $Users
         } Catch {
             Write-Error "`nThere was an error while attempting to connect to Office 365:`n`n$_"
         }
     }
-
-    # Create a count off all mailboxes to track progress
-    $Count = (Get-Mailbox).count
 
     # Specify TLS v1.2
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -51,14 +54,12 @@ Function Get-BreachedAccounts {
     $i = 0
 
     #Loop through each user
-    ForEach ($User in (Get-Mailbox)) {
+    ForEach ($User in $Users) {
         # Increment counter variable $i by 1 for progress
         $i++
 
-        $User = $($User.UserPrincipalName)
-
         # Write Progress to screen based on percentage of users searched
-        Write-Progress -activity "Scanning for $User" -status "Scanned: $i of $Count" -percentComplete (($i / $Count) * 100)
+        Write-Progress -activity "Scanning for $User" -status "Scanned: $i of $($Users.count)" -percentComplete (($i / $($Users.count)) * 100)
 
         # Query HaveIBeenPwned API for breached account
         Try {
