@@ -46,7 +46,7 @@ Function Get-BreachedAccounts {
     )
 
     begin {
-        # If $Users not specified connect to Office 365
+        # If Credentials are specified connect to Office 365 to get email addresses
         If ($Credential) {
             Try {
                 # Create and import Office 365 Session
@@ -58,6 +58,7 @@ Function Get-BreachedAccounts {
             } Catch {
                 Write-Error "`nThere was an error while attempting to connect to Office 365:`n`n$_"
             }
+        # If not, use the provided users
         } Else {
             $Users = $User
         }
@@ -118,5 +119,4 @@ Function Get-BreachedAccounts {
 
         Read-Host "`nIf everything was successful, results can be found at $Destination\BreachResults.csv`n`n"
     }
-
 }
