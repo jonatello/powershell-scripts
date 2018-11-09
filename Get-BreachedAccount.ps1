@@ -12,7 +12,7 @@ Function Get-BreachedAccounts {
     .NOTES
 
     .EXAMPLE
-    PS C:\>Get-BreachedAccounts -Credentials (Get-Credential admin@example.com)
+    PS C:\>Get-BreachedAccounts -Credential (Get-Credential admin@example.com)
 
     PS C:\>Get-BreachedAccounts -Users "user@example.com"
     #>
@@ -20,9 +20,9 @@ Function Get-BreachedAccounts {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $false,Position = 0)]
-        [System.Management.Automation.PSCredential]$Credentials = (Get-Credential -Message "Office365 Admin Credentials"),
+        [System.Management.Automation.PSCredential]$Credential = (Get-Credential -Message "Office365 Admin Credentials"),
         [Parameter(Mandatory = $false,Position = 1)]
-        [string]$Users,
+        [string[]]$User,
         [Parameter(Mandatory = $false,Position = 2)]
         [string]$Destination = 'C:\temp',
         [Parameter(Mandatory = $false,Position = 3)]
@@ -30,21 +30,19 @@ Function Get-BreachedAccounts {
     )
 
     # If $Users not specified connect to Office 365
-    If (!($Users)) {
+    If ($Credential) {
         Try {
             # Create and import Office 365 Session
-            $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credentials -Authentication Basic -AllowRedirection
+            $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credential -Authentication Basic -AllowRedirection
     
             Import-PSSession $Session -DisableNameChecking | Out-Null
 
             $Users = (Get-Mailbox).UserPrincipalName
-            $Users = $Users -split ' '
-
-            $Users.GetType()
-            Write-Host $Users
         } Catch {
             Write-Error "`nThere was an error while attempting to connect to Office 365:`n`n$_"
         }
+    } Else {
+        $Users = $User
     }
 
     # Specify TLS v1.2
