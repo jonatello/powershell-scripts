@@ -76,9 +76,9 @@ Function Get-MicrosoftLicensing {
 
         # If no lines with LICENSE are found within OSPP results, mark fields as N/A
         If ($OSPP -match "LICENSE") {
-            $LicenseName = (($OSPP | Select-String -Pattern 'LICENSE NAME: ') -replace 'LICENSE NAME: ','')
-            $LicenseDescription = (($OSPP | Select-String -Pattern 'LICENSE DESCRIPTION: ') -replace 'License Description: ','')
-            $LicenseStatus = (($OSPP | Select-String -Pattern 'LICENSE STATUS: ') -replace 'License Status: ','')
+            $LicenseName = ($OSPP | Select-String -Pattern 'LICENSE NAME: ') -replace 'LICENSE NAME: ','' | Out-String
+            $LicenseDescription = ($OSPP | Select-String -Pattern 'LICENSE DESCRIPTION: ') -replace 'License Description: ','' | Out-String
+            $LicenseStatus = ($OSPP | Select-String -Pattern 'LICENSE STATUS: ') -replace 'License Status: ','' | Out-String
         } Else {
             $LicenseName = 'N/A'
             $LicenseDescription = 'N/A'
