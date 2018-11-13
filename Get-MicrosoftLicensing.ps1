@@ -15,8 +15,19 @@ Function Get-MicrosoftLicensing {
 
     # Get all Office Activation information via ospp.vbs
     Try {
-        $Path = ls 'C:\Program Files (x86)\Microsoft Office\*\ospp.vbs'
-        $OSPP = cscript $Path\ospp.vbs /dstatus
+        $Directory = (Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft Office\*\ospp.vbs').DirectoryName
+        $OSPP = cscript $Directory\ospp.vbs /dstatus
+
+        # If no lines with LICENSE are found within OSPP results, mark fields as N/A
+        If ($OSPP -match "LICENSE") {
+            $LicenseName = (($OSPP | Select-String -Pattern 'LICENSE NAME: ') -replace 'LICENSE NAME: ','')
+            $LicenseDescription = (($OSPP | Select-String -Pattern 'LICENSE DESCRIPTION: ') -replace 'License Description: ','')
+            $LicenseStatus = (($OSPP | Select-String -Pattern 'LICENSE STATUS: ') -replace 'License Status: ','')
+        } Else {
+            $LicenseName = "N/A"
+            $LicenseDescription = "N/A"
+            $LicenseStatus = "N/A"
+        }
     } Catch {
         Write-Error "There was an exception while running ospp.vbs: $_"
     }
@@ -29,8 +40,8 @@ Function Get-MicrosoftLicensing {
         'Office Product Count (WMI)' = $($SoftwareLicensingProduct.Count)
         'Office Product Name (WMI)' = ($($SoftwareLicensingProduct.Name) | Out-String)
         'Office Product Channel (WMI)' = ($($SoftwareLicensingProduct.ProductKeyChannel) | Out-String)
-        'Office License Name (OSPP)' = (($OSPP | Select-String -Pattern 'LICENSE NAME: ').ToString() -replace 'LICENSE NAME: ','')
-        'Office License Description (OSPP)' = (($OSPP | Select-String -Pattern 'LICENSE DESCRIPTION: ').ToString() -replace 'License Description: ','')
-        'Office License Status (OSPP)' = (($OSPP | Select-String -Pattern 'LICENSE STATUS: ').ToString() -replace 'License Status: ','')
+        'Office License Name (OSPP)' = ($LicenseName | Out-String)
+        'Office License Description (OSPP)' = ($LicenseDescription | Out-String)
+        'Office License Status (OSPP)' = ($LicenseStatus | Out-String)
     } | Write-Output
 }
