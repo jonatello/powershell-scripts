@@ -47,59 +47,60 @@ Function Get-MicrosoftLicensing {
             $ProductKeyChannel = 'N/A'
         }
 
-        If ($($SoftwareLicensingProduct.LicenseName) -notlike $null) {
-            $LicenseName = $($SoftwareLicensingProduct.LicenseName) | Out-String
+        If ($($SoftwareLicensingProduct.LicenseFamily) -notlike $null) {
+            $LicenseFamily = $($SoftwareLicensingProduct.LicenseFamily) | Out-String
         } Else {
-            $LicenseName = 'N/A'
+            $LicenseFamily = 'N/A'
         }
 
-        If ($($SoftwareLicensingProduct.LicenseDescription) -notlike $null) {
-            $LicenseDescription = $($SoftwareLicensingProduct.LicenseDescription) | Out-String
+        If ($($SoftwareLicensingProduct.Description) -notlike $null) {
+            $Description = $($SoftwareLicensingProduct.Description) | Out-String
         } Else {
-            $LicenseDescription = 'N/A'
+            $Description = 'N/A'
         }
 
         If ($($SoftwareLicensingProduct.LicenseStatus) -notlike $null) {
-            $LicenseStatus = $($SoftwareLicensingProduct.LicenseStatus) | Out-String
+            $LicenseStatus = $($SoftwareLicensingProduct.LicenseStatus)
+
+            # Switch on the LicenseStatus code to be human readable
+            $LicenseStatus = switch ($LicenseStatus) {
+                0 {'UNLICENSED'}
+                1 {'LICENSED'}
+                2 {'OOBGRACE'}
+                3 {'OOTGrace'}
+                4 {'NONGENGRACE'}
+                5 {'NOTIFICATION'}
+                6 {'EXTENDEDGRACE'}
+                default {'LICUNKNOWN'}
+            }
+            
+            $LicenseStatus = $LicenseStatus | Out-String
         } Else {
             $LicenseStatus = 'N/A'
+        }
+
+        If ($($SoftwareLicensingProduct.PartialProductKey) -notlike $null) {
+            $PartialProductKey = $($SoftwareLicensingProduct.PartialProductKey) | Out-String
+        } Else {
+            $PartialProductKey = 'N/A'
         }
 
     } Catch {
         Write-Error "There was an exception while querying SoftwareLicensingProduct: $_"
     }
 
-    # Get all Office Activation information via ospp.vbs
-    Try {
-        $Directory = (Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft Office\*\ospp.vbs').DirectoryName
-        $OSPP = cscript $Directory\ospp.vbs /dstatus
-
-        # If no lines with LICENSE are found within OSPP results, mark fields as N/A
-        If ($OSPP -match "LICENSE") {
-            $LicenseName = ($OSPP | Select-String -Pattern 'LICENSE NAME: ') -replace 'LICENSE NAME: ','' | Out-String
-            $LicenseDescription = ($OSPP | Select-String -Pattern 'LICENSE DESCRIPTION: ') -replace 'License Description: ','' | Out-String
-            $LicenseStatus = ($OSPP | Select-String -Pattern 'LICENSE STATUS: ') -replace 'License Status: ','' | Out-String
-        } Else {
-            $LicenseName = 'N/A'
-            $LicenseDescription = 'N/A'
-            $LicenseStatus = 'N/A'
-        }
-
-    } Catch {
-        Write-Error "There was an exception while running ospp.vbs: $_"
-    }
-
     # Create a custom object to hold the results
     New-Object -TypeName PSObject -Property @{
-        'Operating System Version (WMI)' = $Version
-        'Windows Edition (WMI)' = $OA3xOriginalProductKeyDescription
-        'Windows Product Key (WMI)' = $OA3xOriginalProductKey
-        'Office Product Count (WMI)' = $Count
-        'Office Product Name (WMI)' = $Name
-        'Office Product Channel (WMI)' = $ProductKeyChannel
-        'Office License Name (OSPP)' = $LicenseName
-        'Office License Description (OSPP)' = $LicenseDescription
-        'Office License Status (OSPP)' = $LicenseStatus
+        'Operating System Version' = $Version
+        'Windows Edition' = $OA3xOriginalProductKeyDescription
+        'Windows Product Key' = $OA3xOriginalProductKey
+        'Office Product Count' = $Count
+        'Office Product Name' = $Name
+        'Office Product Channel' = $ProductKeyChannel
+        'Office License Family' = $LicenseFamily
+        'Office License Description' = $Description
+        'Office License Status' = $LicenseStatus
+        'Office Partial Product Key' = $PartialProductKey
         'License Audit Performed' = (Get-Date -Format g)
     } | Write-Output
 }
