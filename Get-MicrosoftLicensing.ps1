@@ -1,4 +1,20 @@
 Function Get-MicrosoftLicensing {
+    <#
+    .SYNOPSIS
+    Retrieves Microsoft Operating System and Office licensing information
+    Author: Jon Rodriguez
+    .DESCRIPTION
+    Retrieves Microsoft Operating System and Office licensing information
+    Utilizes WMI for all calls
+    .NOTES
+    N/A
+    .EXAMPLE
+    Get-MicrosoftLicensing
+    #>
+
+    [CmdletBinding()]
+    param()
+    
     # Get all SoftwareLicensingService objects via WMI
     Try {
         $SoftwareLicensingService = Get-WMIObject -Class SoftwareLicensingService
