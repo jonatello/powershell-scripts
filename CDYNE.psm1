@@ -33,28 +33,20 @@ Function Get-QueueID {
     #Invoke SOAP 1.2 request and store in variable
     Try {
         $Response = Invoke-WebRequest -UseBasicParsing $URI -Method Post -ContentType $ContentType -Body $SOAP -Headers $headers
-    }
-    Catch {
-        Write-Warning "There was an error when attempting to get the QueueID $QueueID`n`nError Results:`n`n$_"
-        Exit
+    } Catch {
+        Write-Error "There was an error when attempting to get the QueueID $QueueID`n`nError Results:`n`n$_"
     }
     
     #Manipulate response to get only the last digit pressed
     Try {
         $DigitsPressed = ($Response -split "DigitsPressed>")[1].Substring(0,$($Response -split "DigitsPressed>")[1].Length-2)
         $DigitsPressed = $DigitsPressed.Substring($DigitsPressed.Length-1,1)
-    }
-    Catch {
+    } Catch {
         $DigitsPressed = $null
     }
 
-    #Output the DigitsPressed if they exist
-    If ($DigitsPressed) {
-        Write-Output $DigitsPressed
-    }
-    Else {
-        Write-Output $False
-    }
+    #Output the DigitsPressed
+    Write-Output $DigitsPressed
 }
 
 Function Notify-PhoneBasic {
@@ -113,27 +105,17 @@ Function Notify-PhoneBasic {
     #Invoke SOAP 1.2 request and store in variable
     Try {
         $Response = Invoke-WebRequest -UseBasicParsing $URI -Method Post -ContentType $ContentType -Body $SOAP -Headers $headers
-    }
-    Catch {
+    } Catch {
         Write-Warning "There was an error when attempting to place the call to the phone number $PhoneNumber`n`nError Results:`n`n$_"
-        Exit
     }
 
     #Manipulate response to get only the QueueID
     Try {
         $QueueID = ($Response -split "QueueID>")[1].Substring(0,$($Response -split "QueueID>")[1].Length-2)
-    }
-    Catch {
+    } Catch {
         $QueueID = $null
     }
 
     #Write the output of the QueueID if it exists, if not write $False
-    If ($QueueID) {
-        Write-Output $QueueID       
-    }
-    Else {
-        Write-Output $False
-    }
+    Write-Output $QueueID       
 }
-
-Export-ModuleMember -Function *
