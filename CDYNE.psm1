@@ -106,7 +106,7 @@ Function Notify-PhoneBasic {
     Try {
         $Response = Invoke-WebRequest -UseBasicParsing $URI -Method Post -ContentType $ContentType -Body $SOAP -Headers $headers
     } Catch {
-        Write-Warning "There was an error when attempting to place the call to the phone number $PhoneNumber`n`nError Results:`n`n$_"
+        Write-Error "There was an error when attempting to place the call to the phone number $PhoneNumber`n`nError Results:`n`n$_"
     }
 
     #Manipulate response to get only the QueueID
