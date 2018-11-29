@@ -18,15 +18,15 @@ Function Get-ExternalIP {
         [string]$IP
     )
 
-    If ($IP = $null) {
+    If ($IP -eq $null) {
         Try {
-            Invoke-RestMethod https://ipinfo.io/json
+            Invoke-RestMethod -UseBasicParsing https://ipinfo.io/json
         } Catch {
             Write-Error "There was an issue querying ipinfo.io:`n`n$_"
         }
     } Else {
         Try {
-            Invoke-RestMethod https://ipinfo.io/$IP
+            Invoke-RestMethod -UseBasicParsing https://ipinfo.io/$IP
         } Catch {
             Write-Error "There was an issue querying ipinfo.io:`n`n$_"
         }
