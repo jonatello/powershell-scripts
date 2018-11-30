@@ -1,0 +1,129 @@
+Function Get-MySqlQuery {
+    <#
+    .SYNOPSIS
+    Function to connect to specified MySQL server and run specified query
+    Author: Jon Rodriguez
+    .DESCRIPTION
+    Pass this function a ComputerName (MySQL Server), Credentials (MySQL Authentication), Database (MySQL Database), and QueryStatement
+    It will then, by default, output the results of the query
+    If a Path and Name is passed to the function, results of the query will be exported to a CSV
+    .NOTES
+    Requires the MySQL Connector/NET assembly - https://dev.mysql.com/downloads/connector/net/
+    .EXAMPLE
+    Get-MySQLQuery -ComputerName $Server -Credential (Get-Credential reportingaccount) -Database $Database -QueryStatement $Query
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Output')]
+    param(
+        [Parameter(
+            Mandatory = $true,
+            Position = 0
+        )]
+        [string]$ComputerName,
+
+        [Parameter(
+            Mandatory = $true,
+            Position = 1
+        )]
+        [System.Management.Automation.PSCredential]$Credential,
+
+        [Parameter(
+            Mandatory = $true,
+            Position = 2
+        )]
+        [string]$Database,
+
+        [Parameter(
+            Mandatory = $true,
+            Position = 3,
+            HelpMessage="MySQL query to execute, wrap in double quotes"
+        )]
+        [string]$QueryStatement,
+
+        [Parameter(
+            Mandatory = $false,
+            Position = 4,
+            ParameterSetName = 'Output'
+        )]
+        [string]$Output = $true,
+
+        [Parameter(
+            Mandatory = $true,
+            Position = 5,
+            ParameterSetName = 'CSV',
+            HelpMessage="Path to export CSV to (ie c:\temp)"
+        )]
+        [string]$Path = $null,
+
+        [Parameter(
+            Mandatory = $true,
+            Position = 6,
+            ParameterSetName = 'CSV',
+            HelpMessage="Name to give exported CSV (ie Query1)"
+        )]
+        [string]$Name = $null
+    )
+
+    Begin {
+        Try {
+            # Get Username and Password from Credential object
+            $Username = $($Credential.UserName)
+            $Password = $($Credential.GetNetworkCredential().password)
+
+            #Load MySQL module
+            [void][System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
+            #Create the MySQL Connection String
+            $ConnectionString="server=$ComputerName;uid=$Username;pwd=$Password;database=$Database;Pooling=False;convert zero datetime=True"
+
+            #Create a $mysql variable to hold the connection object
+            $MySql = New-Object MySql.Data.MySqlClient.MySqlConnection($ConnectionString)
+
+            #Open the MySQL connection
+            $MySql.Open()
+        } Catch {
+            Write-Error "There was an error when attempting to connect to $Database on $ComputerName :`n`n$_"
+        }
+    }
+
+    Process {
+        Try {
+            #Save the MySQL query to be utilized in a variable, replacing all " with `"
+            $QueryStatement = $QueryStatement.Replace('"','`"')
+            $SqlQuery = "$QueryStatement"
+
+            #Create a $Request variable to hold the MySQL command/connection in a new object
+            $Request = New-Object Mysql.Data.MysqlClient.MySqlCommand($SqlQuery,$MySql)
+
+            #Execute the $Request variable and hold in a new variable $DataAdapter to capture results
+            $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Request)
+
+            #Create $DataSet variable with DataSet object to hold data
+            $DataSet = New-Object System.Data.DataSet
+
+            #Fill $DataSet variable with query results in $dataAdapter
+            $DataAdapter.Fill($DataSet, "Query1") | Out-Null
+        } Catch {
+            Write-Error "There was an error when attempting to run the query:`n`n$QueryStatement`n`nError Results:`n`n$_"
+        }
+    }
+
+    End {
+        Try {
+            # If $Output is true, Output results
+            If ($Output -eq $true) {
+                Write-Output $DataSet.Tables["Query1"]
+            } Else {
+                # Validate that path exists, if not prompt for valid path
+                While (!(Test-Path $Path)) {
+                    $Path = Read-Host "$Path not found, please type in a valid existing folder"
+                }
+
+                #Create CSV from $DataSet / query
+                $DataSet.Tables["Query1"] | Export-Csv -Path "$Path\$Name.csv" -NoTypeInformation
+                Write-Verbose "Data successfully exported to $Path\$Name.csv"
+            }
+        } Catch {
+            Write-Error "There was an error when attempting to export the query data:`n`n$_"
+        }
+    }
+}
