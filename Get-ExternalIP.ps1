@@ -18,7 +18,7 @@ Function Get-ExternalIP {
         [string]$IP
     )
 
-    If ($IP -eq $null) {
+    If ($IP -like $null) {
         Try {
             Invoke-RestMethod -UseBasicParsing https://ipinfo.io/json
         } Catch {
