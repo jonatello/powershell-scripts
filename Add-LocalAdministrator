@@ -1,0 +1,80 @@
+Function Add-LocalAdministrator {
+    <#
+    .SYNOPSIS
+    Add a new local user to the local administrators group
+    Author: Jon Rodriguez
+    .DESCRIPTION
+    Add a new local administrator with a specified password, mark as active, set the password to never expire, and hide the account from the login screen
+    If the account already exists it will set the new password, mark as active, set the password to never expire, and hide the account from the login screen
+    .NOTES
+
+    .EXAMPLE
+    PS C:\>Add-LocalAdministrator -User 'LocalAdminUser' -Password 'supersecretpassword'
+    #>
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true,Position = 0)]
+        [string]$User,
+        [Parameter(Mandatory = $true,Position = 1)]
+        [string]$Password,
+        [Parameter(Mandatory = $false,Position = 1)]
+        [string]$Hostname = (hostname)
+    )
+
+    # If user does not exist, create it
+    If ($null -eq (net user $User)) {
+        Write-Output "$User does not exist, adding now"
+        $UserCreate = net user $User $Password /add /y
+
+        # Output the result
+        If ($UserCreate -like "The command completed successfully*") {
+            Write-Output "$User successfully created"
+        } Else {
+            Write-Output "$User was not created successfully, exiting now"
+            Exit
+        }
+    } Else {
+        Write-Output "$User already exists, updating password"
+        
+        # Set existing user password
+        $PasswordSet = net user $User $Password
+
+        If ($null -eq $PasswordSet) {
+            Write-Output "$User password failed to update, likely due to not meeting password policy requirements"
+            Exit
+        }
+    }
+
+    # Set user to be Active regardless of current state
+    net user $User /active:yes
+    Write-Output "$User marked as Active"
+
+    # If user is not within the Administrators group, add it
+    If ((net localgroup Administrators) -notcontains $User) {
+        # Add the user account to the Local Administrators group
+        net localgroup Administrators $User /add
+        Write-Output "Adding $User to the Administrators group"
+
+        If ((net localgroup Administrators) -contains $User) {
+            Write-Output "$User has been added to the Administrators group"
+        } Else {
+            Write-Output "$User was not successfully added to the Administrators group, exiting now"
+            Exit
+        }
+    } Else {
+        Write-Output "$User is already a member of the Administrators group"
+    }
+
+    # Set user password to never expire regardless of current state
+    wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET PasswordExpires=FALSE
+    Write-Output "$User password set to never expire"
+
+    # Add registry key to hide account from the login screen regardless if it already exists
+    reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v $User /t REG_DWORD /d 0 /f
+    Write-Output "Registry key added to hide $User from login screen"
+
+    # Output the user user details
+    Write-Output "User details for $User listed below`n`n"
+    net user $User
+}
