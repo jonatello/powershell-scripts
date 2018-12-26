@@ -47,14 +47,14 @@ Function Add-LocalAdministrator {
     }
 
     # Set user to be Active regardless of current state
+    Write-Output "Setting $User to be Active"
     net user $User /active:yes
-    Write-Output "$User marked as Active"
 
     # If user is not within the Administrators group, add it
     If ((net localgroup Administrators) -notcontains $User) {
         # Add the user account to the Local Administrators group
-        net localgroup Administrators $User /add
         Write-Output "Adding $User to the Administrators group"
+        net localgroup Administrators $User /add
 
         If ((net localgroup Administrators) -contains $User) {
             Write-Output "$User has been added to the Administrators group"
@@ -67,12 +67,12 @@ Function Add-LocalAdministrator {
     }
 
     # Set user password to never expire regardless of current state
+    Write-Output "Setting $User password to never expire"
     wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET PasswordExpires=FALSE
-    Write-Output "$User password set to never expire"
 
     # Add registry key to hide account from the login screen regardless if it already exists
+    Write-Output "Adding Registry key to hide $User from login screen"
     reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v $User /t REG_DWORD /d 0 /f
-    Write-Output "Registry key added to hide $User from login screen"
 
     # Output the user user details
     Write-Output "User details for $User listed below`n`n"
