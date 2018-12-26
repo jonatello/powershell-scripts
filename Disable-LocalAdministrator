@@ -44,10 +44,16 @@ Function Disable-LocalAdministrator {
         Exit
     }
 
-    # Disable the specified users within the local administrator group
+    # Disable the specified users
     ForEach ($User in $AdminToDisable) {
         Write-Output "Disabling $User"
-        $DisableStep = wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET Disabled=TRUE
+
+        # If the user is not a member of the Local Administrator group, skip them
+        If ((net localgroup Administrators) -notcontains $User) {
+            Write-Output "$User is not a member of the Local Administrator group, skipping this account"
+        } Else {
+            wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET Disabled=TRUE
+        }
     }
 
     # Generate Hashtable to store users after updates
