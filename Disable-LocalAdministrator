@@ -46,9 +46,8 @@ Function Disable-LocalAdministrator {
 
     # Disable the specified users within the local administrator group
     ForEach ($User in $AdminToDisable) {
-        $DisableStep = wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET Disabled=TRUE
-
         Write-Output "Disabling $User"
+        $DisableStep = wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET Disabled=TRUE
     }
 
     # Generate Hashtable to store users after updates
