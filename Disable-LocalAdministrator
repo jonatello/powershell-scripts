@@ -1,0 +1,66 @@
+Function Disable-LocalAdministrator {
+    <#
+    .SYNOPSIS
+    Disable a local user belonging to the local Administrator group
+    Author: Jon Rodriguez
+    .DESCRIPTION
+    Gets all active users that are members of the Local Administrator group and prints these out
+    Confirms the "AdminToConfirm" is a member of the Local Administrator group and Active, does not proceed if this is not the case
+    Disables the "AdminToDisable" then prints the updated list of active users that are members of the Local Administrator group
+    .NOTES
+
+    .EXAMPLE
+    PS C:\>Disable-LocalAdministrator -AdminToConfirm AdminUser -AdminToDisable "dumb1","dimm2","baduser"
+    #>
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true,Position = 0)]
+        [string]$AdminToConfirm,
+        [Parameter(Mandatory = $true,Position = 1)]
+        [string[]]$AdminToDisable,
+        [Parameter(Mandatory = $false,Position = 2)]
+        [string]$Hostname = (hostname)
+    )
+
+    # Generate Hashtable to store users
+    $AdminUsers = @()
+
+    # Get the name of all Users belonging to the Local Administrator group which are not disabled
+    wmic UserAccount WHERE "(Disabled=`'FALSE`' AND Domain=`'$Hostname`')" GET Name |
+        ForEach-Object {
+            If (($_.Length -ne 0) -and ($_ -ne "Name         ") -and ((net localgroup Administrators) -contains $_.Trim())) {
+                $AdminUsers += $_.Trim()
+            }
+        }
+
+    Write-Output "The following users are Active accounts within the Local Administrator group:`n$AdminUsers"
+
+    # Ensure the desired account is a member of the local Administrator group
+    If ($AdminUsers -contains $AdminToConfirm) {
+        Write-Output "Confirmed $AdminToConfirm is a member of the Local Administrator group and Active"
+    } Else {
+        Write-Output "$AdminToConfirm not found within the Local Administrator group, exiting now"
+        Exit
+    }
+
+    # Disable the specified users within the local administrator group
+    ForEach ($User in $AdminToDisable) {
+        $DisableStep = wmic UserAccount WHERE "(Name=`'$User`' AND Domain=`'$Hostname`')" SET Disabled=TRUE
+
+        Write-Output "Disabling $User"
+    }
+
+    # Generate Hashtable to store users after updates
+    $UpdatedAdminUsers = @()
+
+    # Get the name of all Users belonging to the Local Administrator group which are not disabled
+    wmic UserAccount WHERE "(Disabled=`'FALSE`' AND Domain=`'$Hostname`')" GET Name |
+    ForEach-Object {
+        If (($_.Length -ne 0) -and ($_ -ne "Name         ") -and ((net localgroup Administrators) -contains $_.Trim())) {
+            $UpdatedAdminUsers += $_.Trim()
+        }
+    }
+
+    Write-Output "The following users are Active accounts within the Local Administrator group:`n$UpdatedAdminUsers"
+}
