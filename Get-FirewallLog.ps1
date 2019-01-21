@@ -16,31 +16,31 @@ Function Get-FirewallLog {
         [Parameter(Mandatory = $false,Position = 0)]
         [string]$Path = $Null
     )
+
+    # Get Firewall Logging path via Registry key
+    $LogRegKey = 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging\'
+    $LogLocation = (Get-ItemProperty -Path $LogRegKey -Name LogFilePath -ErrorAction SilentlyContinue).LogFilePath
+    # Set Firewall Logging default path
+    $DefaultLogPath = 'C:\Windows\System32\LogFiles\Firewall\pfirewall.log'
     
     Try {
         # Get Firewall Log from $Path if specified
         If ($Path) {
             $Log = Get-Content -Path $Path | Select-Object -Skip 5
             Write-Output "Using path specified for Firewall Log - $Path"
-        } Else {
-            $LogRegKey = 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging\'
-            $DefaultLogPath = 'C:\Windows\System32\LogFiles\Firewall\pfirewall.log'
-            If (Test-Path -Path $LogRegKey) {
-                $LogLocation = (Get-ItemProperty -Path $LogRegKey -Name LogFilePath).LogFilePath
-                If (Test-Path -Path $LogLocation) {
-                    # Get the content of the log, skip the first 5 informational lines
-                    $Log = Get-Content -Path $LogLocation | Select-Object -Skip 5
-                    Write-Output "Firewall Log Configured and Found via Registry Key"
-                } Else {
-                    Write-Output "Firewall Log Configured but no Log File Found"
-                }
-            } ElseIf (Test-Path -Path $DefaultLogPath) {
-                # Get the content of the log, skip the first 5 informational lines
-                $Log = Get-Content -Path $DefaultLogPath | Select-Object -Skip 5
-                Write-Output "Firewall Log Configured and Found via Default Path"
-            } Else {
-                Write-Output "No Firewall Log Configured"
+        # Get Firewall Log from Registry Key location if exists
+        } ElseIf ($Null -ne $LogLocation) {
+            # Get the content of the log, skip the first 5 informational lines
+            $Log = Get-Content -Path $LogLocation | Select-Object -Skip 5
+            Write-Output "Firewall Log Configured and Found via Registry Key"
+            If ($Null -eq $Log) {
+                Write-Output "Firewall Log Configured but no Log File Found"
             }
+        # Get Firewall Log from Default Path if exists
+        } ElseIf (Test-Path -Path $DefaultLogPath) {
+            # Get the content of the log, skip the first 5 informational lines
+            $Log = Get-Content -Path $DefaultLogPath | Select-Object -Skip 5
+            Write-Output "Firewall Log Found via Default Path"
         }
     } Catch {
         Write-Error "Unable to retrieve Firewall Log"
