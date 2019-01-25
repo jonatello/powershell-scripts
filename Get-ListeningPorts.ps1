@@ -9,9 +9,9 @@ Function Get-ListeningPorts {
     Adapted from this - https://gist.github.com/jeffpatton1971/8440245
 
     Only lists results which meet these conditions:
-    Local Address = 0.0.0.0
+    Local Address != "127.0.0.1" and "::1"
     State = LISTENING
-    Corresponding Process Name is not equal to "svchost", "lsass", "wininit", or "services"
+    Corresponding Process Name is not equal to "svchost", "lsass", "wininit", "services", "LTSVC", or "LTTray"
     .EXAMPLE
 
     #>
@@ -73,15 +73,17 @@ Function Get-ListeningPorts {
             }
         
         # Add the line item to the Listening Array if the following conditions are met
-        # If the local address is "0.0.0.0"
-        If ($LineItem.LocalAddress = "0.0.0.0") {
+        # If the local address is not "127.0.0.1" or "::1"
+        If (($LineItem.LocalAddress -ne "127.0.0.1") -and ($LineItem.LocalAddress -ne "::1")) {
             # If the state is "LISTENING"
             If (($LineItem.State) -and ($LineItem.State.ToUpper() -eq "LISTENING")) {
-                # If the ProcessName is NOT "svchost", "lsass", "wininit", "services" add it to Listening array
+                # If the ProcessName is NOT "svchost", "lsass", "wininit", "services", "LTSVC", "LTTray" add it to Listening array
                 If (($LineItem.ProcessName.ToLower() -ne "svchost") `
                 -and ($LineItem.ProcessName.ToLower() -ne "lsass") `
                 -and ($LineItem.ProcessName.ToLower() -ne "wininit") `
-                -and ($LineItem.ProcessName.ToLower() -ne "services")) {
+                -and ($LineItem.ProcessName.ToLower() -ne "services") `
+                -and ($LineItem.ProcessName.ToLower() -ne "LTSVC") `
+                -and ($LineItem.ProcessName.ToLower() -ne "LTTray")) {
                     $Listening += $LineItem
                 }
             }
