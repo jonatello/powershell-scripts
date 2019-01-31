@@ -29,7 +29,7 @@ Function Get-FirewallLog {
             $Log = Get-Content -Path $Path | Select-Object -Skip 5
             Write-Output "Using path specified for Firewall Log - $Path"
         # Get Firewall Log from Registry Key location if exists
-        } ElseIf ($Null -ne $LogLocation) {
+        } ElseIf (($Null -ne $LogLocation) -and (Test-Path -Path $LogLocation)) {
             # Get the content of the log, skip the first 5 informational lines
             $Log = Get-Content -Path $LogLocation | Select-Object -Skip 5
             Write-Output "Firewall Log Configured and Found via Registry Key"
