@@ -16,7 +16,7 @@ Function Get-EventLogs {
         [Parameter(Mandatory = $false,Position = 0)]
         [string]$QueueID = "Application","Security","Setup","System"
         [Parameter(Mandatory = $false,Position = 1)]
-        [string]$Destination = "C:\temp"
+        [string]$Destination = "C:\temp\eventlogs"
     )
 
     #Create EventLogs folder if it doesn't already exist
