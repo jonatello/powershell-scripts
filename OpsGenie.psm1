@@ -15,7 +15,7 @@ Function Get-OGUser {
     
     [CmdletBinding()]
     param(
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId
@@ -53,7 +53,7 @@ Function Get-OGUserList {
     
     [CmdletBinding()]
     param(
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey
     )
 
@@ -89,7 +89,7 @@ Function New-OGUser {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,    
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -137,7 +137,7 @@ Function Remove-OGUser {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId
@@ -175,7 +175,7 @@ Function Get-OGContact {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId
@@ -213,7 +213,7 @@ Function New-OGContact {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -265,7 +265,7 @@ Function Remove-OGContact {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -310,7 +310,7 @@ Function Update-OGContact {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -356,7 +356,7 @@ Function Get-OGNotificationRule {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -396,7 +396,7 @@ Function Get-OGNotificationRuleList {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId
@@ -434,7 +434,7 @@ Function Get-OGNotificationRuleStep {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -476,7 +476,7 @@ Function Set-OGNotificationRuleStep {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$UserId,
@@ -527,7 +527,7 @@ Function Get-OGAlert {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$AlertId
@@ -565,7 +565,7 @@ Function Get-OGAlertList {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey
     )
 
@@ -601,7 +601,7 @@ Function Update-OGAlert {
     
     [CmdletBinding()]
     param (
-        [Parameter](Mandatory = $true,Position = 0)]
+        [Parameter(Mandatory = $true,Position = 0)]
         [string]$GenieKey,
         [Parameter(Mandatory = $true,Position = 1)]
         [string]$AlertId
