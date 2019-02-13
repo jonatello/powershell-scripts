@@ -540,7 +540,7 @@ Function Get-CWConfiguration {
         Authorization = "Basic $encodedAuth"
     }
 
-    $Try {
+    Try {
         Invoke-RestMethod -URI $BaseURI -Headers $Headers -ContentType $ContentType -Method Get
     } Catch {
         Write-Error "There was an issue when attempting to query the ConnectWise Manage API:`n$_"
@@ -600,7 +600,7 @@ Function Set-CWConfiguration {
         }
     )
 
-    $Try {
+    Try {
         Invoke-RestMethod -URI $BaseURI -Headers $Headers -Body $(ConvertTo-Json $Body) -ContentType $ContentType -Method Patch
     } Catch {
         Write-Error "There was an issue when attempting to query the ConnectWise Manage API:`n$_"
