@@ -14,7 +14,7 @@ Function Get-EventLogs {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $false,Position = 0)]
-        [string]$QueueID = "Application","Security","Setup","System"
+        [string[]]$LogNames = @("Application","Security","Setup","System"),
         [Parameter(Mandatory = $false,Position = 1)]
         [string]$Destination = "C:\temp\eventlogs"
     )
