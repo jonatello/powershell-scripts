@@ -7,7 +7,7 @@ Function Get-SMTPLogs {
     Get all SMTP logs and parse the fields into PowerShell objects which can then be easily filtered
     
     .PARAMETER Path
-    Path to find and get the content of SMTP .log files
+    Path to directory to find and get the content of SMTP .log files
     Defaults to $Null so that the default SMTP logging path will be used
 
     .PARAMETER Start
@@ -156,7 +156,13 @@ Function Get-SMTPLogs {
         $LineData = $Line.Split(" ")
 
         # Create a timestamp variable from the date and time fields
-        $Timestamp = [datetime]($LineData[0] + ' ' + $LineData[1])
+        Try {
+            $Timestamp = [datetime]($LineData[0] + ' ' + $LineData[1])
+        } Catch {
+            # If there is no date and time field manually set the timestamp to 10 years ago to exclude it
+            $Timestamp = ((Get-Date).AddDays(-3650))
+        }
+
 
         # If the timestamp variable is between the Start and End times designated, include it in the parsed logs
         If (($Timestamp -gt $Start) -and ($Timestamp -lt $End)) {
