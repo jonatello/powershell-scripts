@@ -25,6 +25,10 @@ Function Get-SMTPLogs {
     .PARAMETER Summarize
     Summarize parsed logs into a table representing the count of reply codes found
     Defaults to $Null so that parsed logs are output instead
+    
+    .PARAMETER FileTimestamps
+    Limit the files read by filtering with LastWriteTime property
+    Defaults to $False so that all files are read
 
     .NOTES
     Fields used are the default for Microsoft Internet Information Services 8.5 (https://docs.microsoft.com/en-us/windows/desktop/http/w3c-logging):
