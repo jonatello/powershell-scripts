@@ -200,55 +200,55 @@ Function Get-SMTPLogs {
         # Create new PS Custom Object to store summary information and add relevant properties
         $Summary = New-Object PSObject
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "200 - (nonstandard success response, see rfc876)" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "200*").count)
+            Where-Object -Property cs-uri-query -like "200*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "211 - System status, or system help reply" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "211*").count)
+            Where-Object -Property cs-uri-query -like "211*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "214 - Help message" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "214*").count)
+            Where-Object -Property cs-uri-query -like "214*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "220 - <domain> Service ready" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "220*").count)
+            Where-Object -Property cs-uri-query -like "220*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "221 - <domain> Service closing transmission channel" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "221*").count)
+            Where-Object -Property cs-uri-query -like "221*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "250 - Requested mail action okay, completed" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "250*").count)
+            Where-Object -Property cs-uri-query -like "250*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "251 - User not local; will forward to <forward-path>" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "251*").count)
+            Where-Object -Property cs-uri-query -like "251*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "252 - Cannot VRFY user, but will accept message and attempt delivery" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "252*").count)
+            Where-Object -Property cs-uri-query -like "252*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "354 - Start mail input; end with <CRLF>.<CRLF>" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "354*").count)
+            Where-Object -Property cs-uri-query -like "354*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "421 - <domain> Service not available, closing transmission channel" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "421*").count)
+            Where-Object -Property cs-uri-query -like "421*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "450 - Requested mail action not taken: mailbox unavailable" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "450*").count)
+            Where-Object -Property cs-uri-query -like "450*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "451 - Requsted action aborted: local error in processing" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "451*").count)
+            Where-Object -Property cs-uri-query -like "451*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "452 - Requested action not taken: insufficient system storage" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "452*").count)
+            Where-Object -Property cs-uri-query -like "452*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "500 - Syntax error, command unrecognised" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "500*").count)
+            Where-Object -Property cs-uri-query -like "500*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "501 - Syntax error in parameters or arguments" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "501*").count)
+            Where-Object -Property cs-uri-query -like "501*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "502 - Command not implemented" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "502*").count)
+            Where-Object -Property cs-uri-query -like "502*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "503 - Bad sequence of commands" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "503*").count)
+            Where-Object -Property cs-uri-query -like "503*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "504 - Command parameter not implemented" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "504*").count)
+            Where-Object -Property cs-uri-query -like "504*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "521 - <domain> does not accept mail (see rfc1846)" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "521*").count)
+            Where-Object -Property cs-uri-query -like "521*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "530 - Access denied (???a Sendmailism)" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "521*").count)
+            Where-Object -Property cs-uri-query -like "521*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "550 - Requsted action not taken: mailbox unavailable" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "550*").count)
+            Where-Object -Property cs-uri-query -like "550*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "551 - User not local; please try <forward-path>" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "551*").count)
+            Where-Object -Property cs-uri-query -like "551*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "552 - Requsted mail action aborted: exceeded storage allocation" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "552*").count)
+            Where-Object -Property cs-uri-query -like "552*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "553 - Requested action not taken: mailbox name not allowed" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "553*").count)
+            Where-Object -Property cs-uri-query -like "553*" | Measure-Object).Count)
         Add-Member -InputObject $Summary -MemberType NoteProperty -Name "554 - Transaction failed" -Value (($ParsedLog | 
-            Where-Object -Property cs-uri-query -like "554*").count)
+            Where-Object -Property cs-uri-query -like "554*" | Measure-Object).Count)
 
         # Write the output of the Summary
         Write-Output $Summary
