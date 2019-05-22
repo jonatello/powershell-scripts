@@ -50,39 +50,49 @@ Function Get-SMTPLogs {
     [CmdletBinding()]
     param (
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $False,
             Position = 0,
             HelpMessage="Path to find SMTP Logs (ie c:\temp)"
         )]
         [string]$Path = $Null,
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $False,
             Position = 1,
             HelpMessage="Start time to include logs (ie 2 days ago)"
         )]
         [datetime]$Start = ((Get-Date).AddDays(-1)),
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $False,
             Position = 2,
             HelpMessage="End time to include logs (ie Now)"
         )]
         [datetime]$End = (Get-Date),
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $False,
             Position = 3,
             HelpMessage="Specify `$True to show progress of log parsing"
         )]
+        [ValidateSet($True,$False)]
         [string]$Progress = $False,
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $False,
             Position = 4,
             HelpMessage="Specify `$True to only output summary information"
         )]
-        [string]$Summarize = $False
+        [ValidateSet($True,$False)]
+        [string]$Summarize = $False,
+
+        [Parameter(
+            Mandatory = $False,
+            Position = 5,
+            HelpMessage="Specify `$True to only utilize log files with timestamps within the Start/End time range"
+        )]
+        [ValidateSet($True,$False)]
+        [string]$FileTimestamps = $False
     )
 
     # Set SMTP Logging default path
@@ -105,7 +115,14 @@ Function Get-SMTPLogs {
 
             # Loop through all log files and skip the first 5 informational lines
             ForEach ($LogFile in $LogFiles) {
-                $Logs += Get-Content -Path $Path\$LogFile | Select-Object -Skip 5
+                # If FileTimestamps is set to true, only add the log file if it is within specified Start/End time range
+                If ($FileTimestamps -eq $True) {
+                    If (($($LogFile.LastWriteTime) -gt $Start) -and ($($LogFile.LastWriteTime) -lt $End)) {
+                        $Logs += Get-Content -Path $Path\$LogFile | Select-Object -Skip 5
+                    } 
+                } Else {
+                    $Logs += Get-Content -Path $Path\$LogFile | Select-Object -Skip 5
+                }
             }
 
             If (($Logs.count) -eq 0) {
@@ -122,7 +139,14 @@ Function Get-SMTPLogs {
 
             # Loop through all log files and skip the first 5 informational lines
             ForEach ($LogFile in $LogFiles) {
-                $Logs += Get-Content -Path $DefaultLogPath\$LogFile | Select-Object -Skip 5
+                # If FileTimestamps is set to true, only add the log file if it is within specified Start/End time range
+                If ($FileTimestamps -eq $True) {
+                    If (($($LogFile.LastWriteTime) -gt $Start) -and ($($LogFile.LastWriteTime) -lt $End)) {
+                        $Logs += Get-Content -Path $DefaultLogPath\$LogFile | Select-Object -Skip 5
+                    }
+                } Else {
+                    $Logs += Get-Content -Path $DefaultLogPath\$LogFile | Select-Object -Skip 5
+                }
             }
 
             If (($Logs.count) -eq 0) {
